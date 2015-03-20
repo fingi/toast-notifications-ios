@@ -62,11 +62,15 @@ typedef enum {
 	NSTimer *timer;
 	
 	UIView *view;
-	NSString *text;
+	
 }
+
+@property (assign, nonatomic) BOOL isRemoved;
+@property (copy, nonatomic) NSString *text;
 
 - (void) show;
 - (void) show:(iToastType) type;
+- (void) dismiss;
 - (iToast *) setDuration:(NSInteger ) duration;
 - (iToast *) setGravity:(iToastGravity) gravity 
 			 offsetLeft:(NSInteger) left
@@ -83,7 +87,7 @@ typedef enum {
 
 + (iToast *) makeText:(NSString *) text;
 
--(iToastSettings *) theSettings;
+- (iToastSettings *) theSettings;
 
 @end
 
@@ -131,3 +135,35 @@ typedef enum {
 + (iToastSettings *) getSharedSettings;
 						  
 @end
+
+#pragma mark - queuing mechanism
+
+// Allow multiple toasts to queue up and show the next one when the one before it has dismissed.
+
+// Usage: create a toast as normally, but don't call -show on it. Instead, add it to -queueToast:.
+// Example:
+// iToast *t = [iToast makeText:@"This is a queued TOAST!"];
+// [[iToastQueue shared] queueToast:t]
+
+@interface iToastQueue : NSObject
+@property (strong, nonatomic) NSOperationQueue *queue;
++ (instancetype)shared;
+- (void)queueToast:(iToast*)toast;
+- (void)cancelAllQueuedToasts;
+@end
+
+@interface iToastOperation : NSOperation
+
+// re-declared NSOperation variable so we can set it
+@property (readonly) BOOL isCancelled;
+// re-declared NSOperation variable so we can set it
+@property (readonly) BOOL isExecuting;
+// re-declared NSOperation variable so we can set it
+@property (readonly) BOOL isFinished;
+
+@property (strong, nonatomic) iToast *toast;
+
+- (instancetype)initWithToast:(iToast*)toast;
+
+@end
+

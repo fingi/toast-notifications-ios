@@ -50,9 +50,8 @@ static iToastSettings *sharedSettings = nil;
 
 - (id) initWithText:(NSString *) tex{
 	if (self = [super init]) {
-		text = [tex copy];
+		self.text = [tex copy];
 	}
-	
 	return self;
 }
 
@@ -71,60 +70,61 @@ static iToastSettings *sharedSettings = nil;
 	UIImage *image = [theSettings.images valueForKey:[NSString stringWithFormat:@"%i", type]];
 	
 	UIFont *font = [UIFont systemFontOfSize:theSettings.fontSize];
-	CGSize textSize = [text sizeWithFont:font constrainedToSize:CGSizeMake(280, 60)];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, textSize.width + kComponentPadding, textSize.height + kComponentPadding)];
+    CGSize textSize = [self.text boundingRectWithSize:CGSizeMake(280, 60)
+                                         options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:@{NSFontAttributeName:font}
+                                         context:nil].size;
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, textSize.width , textSize.height + kComponentPadding)];
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
 	label.font = font;
-	label.text = text;
+	label.text = self.text;
 	label.numberOfLines = 0;
+    [label setTextAlignment:NSTextAlignmentCenter]; // default to center
 	if (theSettings.useShadow) {
 		label.shadowColor = [UIColor darkGrayColor];
 		label.shadowOffset = CGSizeMake(1, 1);
 	}
 	
-	UIButton *v = [UIButton buttonWithType:UIButtonTypeCustom];
+	UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
 	if (image) {
-		v.frame = [self _toastFrameForImageSize:image.size withLocation:[theSettings imageLocation] andTextSize:textSize];
+		btn.frame = [self _toastFrameForImageSize:image.size withLocation:[theSettings imageLocation] andTextSize:textSize];
         
         switch ([theSettings imageLocation]) {
             case iToastImageLocationLeft:
                 [label setTextAlignment:NSTextAlignmentLeft];
                 label.center = CGPointMake(image.size.width + kComponentPadding * 2 
-                                           + (v.frame.size.width - image.size.width - kComponentPadding * 2) / 2, 
-                                           v.frame.size.height / 2);
+                                           + (btn.frame.size.width - image.size.width - kComponentPadding * 2) / 2, 
+                                           btn.frame.size.height / 2);
                 break;
             case iToastImageLocationTop:
                 [label setTextAlignment:NSTextAlignmentCenter];
-                label.center = CGPointMake(v.frame.size.width / 2, 
+                label.center = CGPointMake(btn.frame.size.width / 2, 
                                            (image.size.height + kComponentPadding * 2 
-                                            + (v.frame.size.height - image.size.height - kComponentPadding * 2) / 2));
+                                            + (btn.frame.size.height - image.size.height - kComponentPadding * 2) / 2));
                 break;
             default:
                 break;
         }
 		
 	} else {
-		v.frame = CGRectMake(0, 0, textSize.width + kComponentPadding * 2, textSize.height + kComponentPadding * 2);
-		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
+		btn.frame = CGRectMake(0, 0, textSize.width + kComponentPadding * 2, textSize.height + kComponentPadding * 2);
+		label.center = CGPointMake(btn.frame.size.width / 2, btn.frame.size.height / 2);
 	}
 	CGRect lbfrm = label.frame;
 	lbfrm.origin.x = ceil(lbfrm.origin.x);
 	lbfrm.origin.y = ceil(lbfrm.origin.y);
 	label.frame = lbfrm;
-	[v addSubview:label];
-	[label release];
+	[btn addSubview:label];
 	
 	if (image) {
 		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-		imageView.frame = [self _frameForImage:type inToastFrame:v.frame];
-		[v addSubview:imageView];
-		[imageView release];
+		imageView.frame = [self _frameForImage:type inToastFrame:btn.frame];
+		[btn addSubview:imageView];
 	}
 	
-	v.backgroundColor = [UIColor colorWithRed:theSettings.bgRed green:theSettings.bgGreen blue:theSettings.bgBlue alpha:theSettings.bgAlpha];
-	v.layer.cornerRadius = theSettings.cornerRadius;
+	btn.backgroundColor = [UIColor colorWithRed:theSettings.bgRed green:theSettings.bgGreen blue:theSettings.bgBlue alpha:theSettings.bgAlpha];
+	btn.layer.cornerRadius = theSettings.cornerRadius;
 	
 	UIWindow *window = [[[UIApplication sharedApplication] windows] objectAtIndex:0];
 	
@@ -150,7 +150,7 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationPortraitUpsideDown:
 		{
-			v.transform = CGAffineTransformMakeRotation(M_PI);
+			btn.transform = CGAffineTransformMakeRotation(M_PI);
 			
 			float width = window.frame.size.width;
 			float height = window.frame.size.height;
@@ -171,7 +171,7 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationLandscapeLeft:
 		{
-			v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
+			btn.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
 			
 			if (theSettings.gravity == iToastGravityTop) {
 				point = CGPointMake(window.frame.size.width - 45, window.frame.size.height / 2);
@@ -189,7 +189,7 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationLandscapeRight:
 		{
-			v.transform = CGAffineTransformMakeRotation(-M_PI/2);
+			btn.transform = CGAffineTransformMakeRotation(-M_PI/2);
 			
 			if (theSettings.gravity == iToastGravityTop) {
 				point = CGPointMake(45, window.frame.size.height / 2);
@@ -209,30 +209,30 @@ static iToastSettings *sharedSettings = nil;
 			break;
 	}
 
-	v.center = point;
-	v.frame = CGRectIntegral(v.frame);
+	btn.center = point;
+	btn.frame = CGRectIntegral(btn.frame);
 	
 	NSTimer *timer1 = [NSTimer timerWithTimeInterval:((float)theSettings.duration)/1000 
-											 target:self selector:@selector(hideToast:) 
+											 target:self selector:@selector(dismiss)
 										   userInfo:nil repeats:NO];
 	[[NSRunLoop mainRunLoop] addTimer:timer1 forMode:NSDefaultRunLoopMode];
 	
-	v.tag = CURRENT_TOAST_TAG;
+	btn.tag = CURRENT_TOAST_TAG;
 
 	UIView *currentToast = [window viewWithTag:CURRENT_TOAST_TAG];
 	if (currentToast != nil) {
     	[currentToast removeFromSuperview];
 	}
 
-	v.alpha = 0;
-	[window addSubview:v];
+	btn.alpha = 0;
+	[window addSubview:btn];
 	[UIView beginAnimations:nil context:nil];
-	v.alpha = 1;
+	btn.alpha = 1;
 	[UIView commitAnimations];
 	
-	view = [v retain];
-	
-	[v addTarget:self action:@selector(hideToast:) forControlEvents:UIControlEventTouchDown];
+    view = btn;
+    
+	[btn addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchDown];
 }
 
 - (CGRect)_toastFrameForImageSize:(CGSize)imageSize withLocation:(iToastImageLocation)location andTextSize:(CGSize)textSize {
@@ -278,25 +278,27 @@ static iToastSettings *sharedSettings = nil;
     
 }
 
-- (void) hideToast:(NSTimer*)theTimer{
+- (void) dismiss {
 	[UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3];
 	view.alpha = 0;
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(removeToast)];
 	[UIView commitAnimations];
-	
-	NSTimer *timer2 = [NSTimer timerWithTimeInterval:500 
-											 target:self selector:@selector(hideToast:) 
-										   userInfo:nil repeats:NO];
-	[[NSRunLoop mainRunLoop] addTimer:timer2 forMode:NSDefaultRunLoopMode];
+//	NSTimer *timer2 = [NSTimer timerWithTimeInterval:500 
+//											 target:self selector:@selector(dismiss)
+//										   userInfo:nil repeats:NO];
+//	[[NSRunLoop mainRunLoop] addTimer:timer2 forMode:NSDefaultRunLoopMode];
 }
 
-- (void) removeToast:(NSTimer*)theTimer{
+- (void) removeToast {
+    self.isRemoved = YES;
 	[view removeFromSuperview];
 }
 
 
 + (iToast *) makeText:(NSString *) _text{
-	iToast *toast = [[[iToast alloc] initWithText:_text] autorelease];
-	
+	iToast *toast = [[iToast alloc] initWithText:_text];
 	return toast;
 }
 
@@ -456,6 +458,133 @@ static iToastSettings *sharedSettings = nil;
     [copy setImageLocation:imageLocation];
 	
 	return copy;
+}
+
+@end
+
+
+@interface iToastQueue ()
+@end
+
+@implementation iToastQueue
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.queue = [[NSOperationQueue alloc] init];
+        self.queue.maxConcurrentOperationCount = 1;
+    }
+    return self;
+}
+
++ (instancetype)shared {
+    static dispatch_once_t once;
+    static iToastQueue *sharedInstance;
+    dispatch_once(&once, ^{
+        sharedInstance = [[iToastQueue alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (void)queueToast:(iToast *)toast {
+    iToastOperation *op = [[iToastOperation alloc] initWithToast:toast];
+    [self.queue addOperation:op];
+}
+
+- (void)cancelAllQueuedToasts {
+    [self.queue cancelAllOperations];
+}
+
+@end
+
+
+// credit: http://www.dribin.org/dave/blog/archives/2009/05/05/concurrent_operations/
+@interface iToastOperation ()
+@end
+
+@implementation iToastOperation
+
+@synthesize isCancelled = _isCancelled;
+@synthesize isExecuting = _isExecuting;
+@synthesize isFinished = _isFinished;
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.queuePriority = NSOperationQueuePriorityNormal;
+        self.qualityOfService = NSOperationQualityOfServiceUtility;
+        _isCancelled = NO;
+        _isExecuting = NO;
+        _isFinished = NO;
+    }
+    return self;
+}
+
+- (instancetype)initWithToast:(iToast*)toast {
+    self = [super init];
+    if (self) {
+        self.toast = toast;
+        [self.toast addObserver:self forKeyPath:@"isRemoved" options:NSKeyValueObservingOptionNew context:nil];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [self.toast removeObserver:self forKeyPath:@"isRemoved"];
+}
+
+// First, we have to make sure we are running on the main thread.
+// Second, we have to change the isExecuting property to YES.
+// Use -start instead of -main so we can manage isExecuting and isFinished.
+- (void)start {
+    if (![NSThread isMainThread]) {
+        [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
+        return;
+    }
+    
+    if (self.isCancelled) {
+        return;
+    }
+    
+    [self willChangeValueForKey:@"isExecuting"];
+    _isExecuting = YES;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    if (self.isCancelled) { // safety
+        return;
+    }
+    
+    [self.toast show];
+}
+
+// need to set _isFinished = YES; otherwise the operation won't be removed from queue
+- (void)cancel {
+    [self willChangeValueForKey:@"isCancelled"];
+    _isCancelled = YES;
+    [self didChangeValueForKey:@"isCancelled"];
+    
+    [self.toast dismiss];
+    [self finish];
+}
+
+// The key point here is that we change the isExecuting and isFinished flags. Only when these are set to NO and YES, respectively, will the operation be removed from the queue. The queue monitors their values using key-value observing.
+- (void)finish {
+    [self willChangeValueForKey:@"isExecuting"];
+    _isExecuting = NO;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    [self willChangeValueForKey:@"isFinished"];
+    _isFinished = YES;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (object == self.toast && [keyPath isEqualToString:@"isRemoved"]) {
+        [self finish];
+    }
 }
 
 @end
