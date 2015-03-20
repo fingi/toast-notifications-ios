@@ -14,6 +14,7 @@
 		E0FDEB5F1ABBED2600008E98 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0FDEB5E1ABBED2600008E98 /* Images.xcassets */; };
 		E0FDEB621ABBED2600008E98 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0FDEB601ABBED2600008E98 /* LaunchScreen.xib */; };
 		E0FDEB6E1ABBED2600008E98 /* iToastDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E0FDEB6D1ABBED2600008E98 /* iToastDemoTests.m */; };
+		E0FDEB791ABBEDB500008E98 /* iToast.m in Sources */ = {isa = PBXBuildFile; fileRef = E0FDEB781ABBEDB500008E98 /* iToast.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		E0FDEB671ABBED2600008E98 /* iToastDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iToastDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0FDEB6C1ABBED2600008E98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E0FDEB6D1ABBED2600008E98 /* iToastDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iToastDemoTests.m; sourceTree = "<group>"; };
+		E0FDEB771ABBEDB500008E98 /* iToast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iToast.h; path = ../iToast.h; sourceTree = "<group>"; };
+		E0FDEB781ABBEDB500008E98 /* iToast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iToast.m; path = ../iToast.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +66,8 @@
 		E0FDEB451ABBED2600008E98 = {
 			isa = PBXGroup;
 			children = (
+				E0FDEB771ABBEDB500008E98 /* iToast.h */,
+				E0FDEB781ABBEDB500008E98 /* iToast.m */,
 				E0FDEB501ABBED2600008E98 /* iToastDemo */,
 				E0FDEB6A1ABBED2600008E98 /* iToastDemoTests */,
 				E0FDEB4F1ABBED2600008E98 /* Products */,
@@ -222,6 +227,7 @@
 				E0FDEB5A1ABBED2600008E98 /* ViewController.m in Sources */,
 				E0FDEB571ABBED2600008E98 /* AppDelegate.m in Sources */,
 				E0FDEB541ABBED2600008E98 /* main.m in Sources */,
+				E0FDEB791ABBEDB500008E98 /* iToast.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
