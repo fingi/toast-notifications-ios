@@ -1,4 +1,11 @@
+Hlung's fork
+------
 
+- add toast queuing mechanism (using NSOperationQueue)
+- add demo project
+- add demo.gif
+
+![demo](demo.gif)
 
 # What is iToast
 
