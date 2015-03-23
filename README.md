@@ -1,22 +1,12 @@
-Hlung's fork
-------
-
-- add toast queuing mechanism (using NSOperationQueue)
-- add demo project
-- add demo.gif
-
-![demo](demo.gif)
-
 # What is iToast
 
 This page tells you what toast notifications are and why you may need them in your iPhone/iPad application.
 
-***
+![demo](demo.gif)
 
 If you develop already for Android, then you know what it is so you can skip to the next section.
 
 For the others of us: a toast is a spécial way to display 'non intrusive' message to the user. Those message are displayed on a configurable place on the screen and they disapear after a configurable time interval. The way they appear is similar to the way the Growl app (on mac do).
-
 
 # Difference between iToast and Toast on Android
 
