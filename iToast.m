@@ -496,6 +496,13 @@ static iToastSettings *sharedSettings = nil;
     [self.queue cancelAllOperations];
 }
 
++ (void)queueToastWithText:(NSString*)text {
+    iToast *t = [iToast makeText:text];
+    [t setGravity:iToastGravityBottom];
+    [t setDuration:iToastDurationNormal]; // 3 sec
+    [[iToastQueue shared] queueToast:t];
+}
+
 @end
 
 

@@ -150,6 +150,8 @@ typedef enum {
 + (instancetype)shared;
 - (void)queueToast:(iToast*)toast;
 - (void)cancelAllQueuedToasts;
+// Convenience. Creates a toast (bottom, 3 sec) and adds it to queue.
++ (void)queueToastWithText:(NSString*)text;
 @end
 
 @interface iToastOperation : NSOperation
