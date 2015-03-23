@@ -508,6 +508,7 @@ static iToastSettings *sharedSettings = nil;
 
 // credit: http://www.dribin.org/dave/blog/archives/2009/05/05/concurrent_operations/
 @interface iToastOperation ()
+@property (strong, nonatomic) iToast *toast;
 @end
 
 @implementation iToastOperation

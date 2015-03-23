@@ -163,7 +163,7 @@ typedef enum {
 // re-declared NSOperation variable so we can set it
 @property (readonly) BOOL isFinished;
 
-@property (strong, nonatomic) iToast *toast;
+@property (readonly, nonatomic) iToast *toast;
 
 - (instancetype)initWithToast:(iToast*)toast;
 
